@@ -1,163 +1,155 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
-import { Home } from "./pages/Home";
-import { JobListing } from "./pages/JobListing";
-import { JobDetail } from "./pages/JobDetail";
-import { Login } from "./pages/Login";
-import { Register } from "./pages/Register";
-import { CandidateDashboard } from "./pages/CandidateDashboard";
-import { MyApplications } from "./pages/MyApplications";
-import { Profile } from "./pages/Profile";
-import { ApplyFlow } from "./pages/ApplyFlow";
-import { AdminDashboard } from "./pages/AdminDashboard";
-import { ManageJobs } from "./pages/ManageJobs";
-import { CreateEditJob } from "./pages/CreateEditJob";
-import { BulkUpload } from "./pages/BulkUpload";
-import { Applicants } from "./pages/Applicants";
-import { NotFound } from "./pages/NotFound";
-import { Companies } from "./pages/Companies";
-import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { RequireAdmin, RequireUser } from "./components/RouteGuards";
+
+// Lazy-load every page so each becomes its own JS chunk (code splitting)
+const Home             = lazy(() => import("./pages/Home").then(m => ({ default: m.Home })));
+const JobListing       = lazy(() => import("./pages/JobListing").then(m => ({ default: m.JobListing })));
+const JobDetail        = lazy(() => import("./pages/JobDetail").then(m => ({ default: m.JobDetail })));
+const Login            = lazy(() => import("./pages/Login").then(m => ({ default: m.Login })));
+const Register         = lazy(() => import("./pages/Register").then(m => ({ default: m.Register })));
+const CandidateDashboard = lazy(() => import("./pages/CandidateDashboard").then(m => ({ default: m.CandidateDashboard })));
+const MyApplications   = lazy(() => import("./pages/MyApplications").then(m => ({ default: m.MyApplications })));
+const Profile          = lazy(() => import("./pages/Profile").then(m => ({ default: m.Profile })));
+const ApplyFlow        = lazy(() => import("./pages/ApplyFlow").then(m => ({ default: m.ApplyFlow })));
+const AdminDashboard   = lazy(() => import("./pages/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const ManageJobs       = lazy(() => import("./pages/ManageJobs").then(m => ({ default: m.ManageJobs })));
+const CreateEditJob    = lazy(() => import("./pages/CreateEditJob").then(m => ({ default: m.CreateEditJob })));
+const BulkUpload       = lazy(() => import("./pages/BulkUpload").then(m => ({ default: m.BulkUpload })));
+const Applicants       = lazy(() => import("./pages/Applicants").then(m => ({ default: m.Applicants })));
+const NotFound         = lazy(() => import("./pages/NotFound").then(m => ({ default: m.NotFound })));
+const Companies        = lazy(() => import("./pages/Companies").then(m => ({ default: m.Companies })));
+const PlaceholderPage  = lazy(() => import("./pages/PlaceholderPage").then(m => ({ default: m.PlaceholderPage })));
+
+// Wrap lazy components so Suspense is always present
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", fontSize: "1rem", color: "#888" }}>Loading…</div>}>
+    {children}
+  </Suspense>
+);
 
 function CandidateDashboardRoute() {
   return (
-    <RequireUser>
-      <CandidateDashboard />
-    </RequireUser>
+    <S><RequireUser><CandidateDashboard /></RequireUser></S>
   );
 }
 
 function MyApplicationsRoute() {
   return (
-    <RequireUser>
-      <MyApplications />
-    </RequireUser>
+    <S><RequireUser><MyApplications /></RequireUser></S>
   );
 }
 
 function ProfileRoute() {
   return (
-    <RequireUser>
-      <Profile />
-    </RequireUser>
+    <S><RequireUser><Profile /></RequireUser></S>
   );
 }
 
 function ApplyRoute() {
   return (
-    <RequireUser>
-      <ApplyFlow />
-    </RequireUser>
+    <S><RequireUser><ApplyFlow /></RequireUser></S>
   );
 }
 
 function AdminDashboardRoute() {
   return (
-    <RequireAdmin>
-      <AdminDashboard />
-    </RequireAdmin>
+    <S><RequireAdmin><AdminDashboard /></RequireAdmin></S>
   );
 }
 
 function ManageJobsRoute() {
   return (
-    <RequireAdmin>
-      <ManageJobs />
-    </RequireAdmin>
+    <S><RequireAdmin><ManageJobs /></RequireAdmin></S>
   );
 }
 
 function CreateEditJobRoute() {
   return (
-    <RequireAdmin>
-      <CreateEditJob />
-    </RequireAdmin>
+    <S><RequireAdmin><CreateEditJob /></RequireAdmin></S>
   );
 }
 
 function BulkUploadRoute() {
   return (
-    <RequireAdmin>
-      <BulkUpload />
-    </RequireAdmin>
+    <S><RequireAdmin><BulkUpload /></RequireAdmin></S>
   );
 }
 
 function ApplicantsRoute() {
   return (
-    <RequireAdmin>
-      <Applicants />
-    </RequireAdmin>
+    <S><RequireAdmin><Applicants /></RequireAdmin></S>
   );
 }
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: Home,
+    element: <S><Home /></S>,
   },
   {
     path: "/jobs",
-    Component: JobListing,
+    element: <S><JobListing /></S>,
   },
   {
     path: "/companies",
-    Component: Companies,
+    element: <S><Companies /></S>,
   },
   {
     path: "/services/*",
-    Component: PlaceholderPage,
+    element: <S><PlaceholderPage /></S>,
   },
   {
     path: "/employer/*",
-    Component: PlaceholderPage,
+    element: <S><PlaceholderPage /></S>,
   },
   {
     path: "/jobs/:id",
-    Component: JobDetail,
+    element: <S><JobDetail /></S>,
   },
   {
     path: "/login",
-    Component: Login,
+    element: <S><Login /></S>,
   },
   {
     path: "/register",
-    Component: Register,
+    element: <S><Register /></S>,
   },
   {
     path: "/dashboard",
-    Component: CandidateDashboardRoute,
+    element: <CandidateDashboardRoute />,
   },
   {
     path: "/my-applications",
-    Component: MyApplicationsRoute,
+    element: <MyApplicationsRoute />,
   },
   {
     path: "/profile",
-    Component: ProfileRoute,
+    element: <ProfileRoute />,
   },
   {
     path: "/apply/:id",
-    Component: ApplyRoute,
+    element: <ApplyRoute />,
   },
   {
     path: "/admin",
-    Component: AdminDashboardRoute,
+    element: <AdminDashboardRoute />,
   },
   {
     path: "/admin/jobs",
-    Component: ManageJobsRoute,
+    element: <ManageJobsRoute />,
   },
   {
     path: "/admin/jobs/create",
-    Component: CreateEditJobRoute,
+    element: <CreateEditJobRoute />,
   },
   {
     path: "/admin/jobs/:id/edit",
-    Component: CreateEditJobRoute,
+    element: <CreateEditJobRoute />,
   },
   {
     path: "/admin/bulk-upload",
-    Component: BulkUploadRoute,
+    element: <BulkUploadRoute />,
   },
   {
     path: "/home",
@@ -169,10 +161,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin/applicants",
-    Component: ApplicantsRoute,
+    element: <ApplicantsRoute />,
   },
   {
     path: "*",
-    Component: NotFound,
+    element: <S><NotFound /></S>,
   },
 ]);
