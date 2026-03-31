@@ -87,6 +87,22 @@ const authLimiter = rateLimit({
 
 app.use(globalLimiter);
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to the HYREIN API',
+    docs: 'Append /api/jobs or /api/companies to explore'
+  });
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'HYREIN API Gateway is Active',
+    version: '1.0.0'
+  });
+});
+
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/apply', require('./routes/applicationRoutes'));
@@ -109,6 +125,16 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 app.use(notFound);
-app.use(errorHandler);
+
+// Custom Error Handler to hide stack in production
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message,
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+  });
+});
+
 
 module.exports = app;
