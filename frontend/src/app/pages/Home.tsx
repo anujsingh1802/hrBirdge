@@ -100,47 +100,63 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)]">
-      <Navbar variant="public" />
+      <Navbar />
 
-      <section className="bg-[var(--bg-surface)] py-20 md:py-24" style={{ boxShadow: "var(--shadow-sm)" }}>
+      <section className="bg-[var(--bg-surface)] pt-[130px] pb-20 md:pt-[160px] md:pb-24" style={{ boxShadow: "var(--shadow-sm)" }}>
         <div className="max-w-[var(--container-max)] mx-auto px-4 md:px-[var(--container-margin)]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-strong)] mb-6 leading-tight">
-                Find Better Jobs With a Cleaner, Faster Hiring Experience
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50/80 text-blue-700 font-semibold text-sm mb-6 border border-blue-100/50">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+                HYREIN – Hire Smarter
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight tracking-tight">
+                Hire Smarter.<br/><span className="text-blue-600">Grow Faster.</span>
               </h1>
-              <p className="text-lg text-[var(--text-default)] mb-8">
-                Search live openings, apply with confidence, and track updates from a modern job platform powered by your backend.
+              <p className="text-lg md:text-xl text-slate-600 mb-8 max-w-xl leading-relaxed font-medium">
+                Connecting talent with opportunity through smart hiring and job-ready skills. Where companies find the right talent, and candidates find the right career.
               </p>
+              
+              <div className="flex flex-wrap items-center gap-3 mb-10">
+                 <div className="flex items-center gap-2 text-sm font-bold text-slate-700 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
+                   🏢 For Employers
+                 </div>
+                 <div className="flex items-center gap-2 text-sm font-bold text-slate-700 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
+                   👨‍💻 For Job Seekers
+                 </div>
+              </div>
 
-              <div className="bg-white p-2 flex flex-col md:flex-row gap-2" style={{ borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-md)" }}>
+              <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="bg-white p-2 flex flex-col md:flex-row gap-2" style={{ borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-md)" }}>
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                   <Input
                     value={keyword}
                     onChange={(event) => setKeyword(event.target.value)}
                     placeholder="Job title, skill, or keyword"
-                    className="pl-10 border-0 h-12 bg-transparent focus-visible:ring-0"
+                    className="pl-10 border-0 h-12 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                   />
                 </div>
+                <div className="hidden md:block w-px bg-slate-200 my-2" />
                 <div className="flex-1 relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                   <Input
                     value={location}
                     onChange={(event) => setLocation(event.target.value)}
                     placeholder="Location"
-                    className="pl-10 border-0 h-12 bg-transparent focus-visible:ring-0"
+                    className="pl-10 border-0 h-12 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                   />
                 </div>
                 <Button
-                  type="button"
-                  onClick={handleSearch}
+                  type="submit"
                   className="h-12 px-8 bg-[var(--accent-500)] hover:bg-[var(--accent-600)] text-white"
                   style={{ borderRadius: "var(--radius-button)" }}
                 >
                   Search Jobs
                 </Button>
-              </div>
+              </form>
             </div>
 
             <div className="hidden md:block">

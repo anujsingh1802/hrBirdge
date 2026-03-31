@@ -35,7 +35,7 @@ export function BulkUpload() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "job_portal_bulk_upload_template.csv";
+    anchor.download = "hr_bridge_bulk_upload_template.csv";
     anchor.click();
     URL.revokeObjectURL(url);
   };

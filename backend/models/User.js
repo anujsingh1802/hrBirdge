@@ -7,9 +7,8 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Name is required'],
       trim: true,
-      minlength: [2, 'Name must be at least 2 characters'],
+      default: "User",
       maxlength: [100, 'Name cannot exceed 100 characters'],
     },
     email: {
@@ -22,10 +21,13 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
       select: false,
     },
+    isVerified: { type: Boolean, default: false },
+    otp: { type: String },
+    otpExpiry: { type: Date },
+    refreshToken: { type: String },
     role: {
       type: String,
       enum: ROLES,

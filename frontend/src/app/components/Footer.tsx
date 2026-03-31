@@ -9,7 +9,7 @@ export function Footer() {
           {/* Company */}
           <div>
             <div className="flex items-center gap-2 mb-6">
-              <img src="/logo.png" alt="Minds Solutions" className="h-12 w-auto object-contain drop-shadow-sm" />
+              <img src="/logo.svg" alt="HYREIN Logo" className="h-20 w-auto object-contain" />
             </div>
             <p className="text-sm text-[var(--text-inverse)]/80 leading-relaxed">
               Connecting talented professionals with their dream careers.
@@ -74,7 +74,7 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-[var(--text-inverse)]">Connect With Us</h4>
             <p className="text-sm text-[var(--text-inverse)]/80 mb-4">
-              support@jobportal.com
+              hello@hyrein.com
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
@@ -95,7 +95,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 text-center">
           <p className="text-sm text-[var(--text-inverse)]/60">
-            © 2026 JobPortal. All rights reserved.
+            © 2026 HYREIN. All rights reserved.
           </p>
         </div>
       </div>

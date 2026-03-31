@@ -11,9 +11,11 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   isAdmin: boolean;
   loading: boolean;
+  register: (email: string, password: string, name: string) => Promise<AuthUser>;
   login: (email: string, password: string) => Promise<AuthUser>;
-  register: (name: string, email: string, password: string) => Promise<AuthUser>;
-  logout: () => void;
+  sendOtp: (email: string) => Promise<boolean>;
+  verifyOtp: (email: string, otp: string) => Promise<AuthUser>;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<AuthUser | null>;
   setUser: (user: AuthUser | null) => void;
 }
@@ -29,14 +31,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true;
 
     const bootstrap = async () => {
-      if (!token) {
-        if (mounted) setLoading(false);
-        return;
-      }
-
       try {
-        const me = await api.getMe(token);
-        if (mounted) setUser(me);
+        let currentToken = token;
+        
+        if (!currentToken) {
+           try {
+             const result = await api.refreshAuth();
+             currentToken = result.token;
+             localStorage.setItem(TOKEN_KEY, currentToken);
+             if (mounted) setToken(currentToken);
+           } catch {
+             if (mounted) setLoading(false);
+             return;
+           }
+        }
+
+        try {
+          const me = await api.getMe(currentToken);
+          if (mounted) setUser(me);
+        } catch {
+          try {
+             const result = await api.refreshAuth();
+             currentToken = result.token;
+             localStorage.setItem(TOKEN_KEY, currentToken);
+             if (mounted) setToken(currentToken);
+             const me = await api.getMe(currentToken);
+             if (mounted) setUser(me);
+          } catch {
+             throw new Error('Session expired');
+          }
+        }
       } catch {
         localStorage.removeItem(TOKEN_KEY);
         if (mounted) {
@@ -61,21 +85,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: Boolean(user && token),
     isAdmin: user?.role === 'admin',
     loading,
+    async register(email: string, password: string, name: string) {
+      const result = await api.registerUser({ name, email, password });
+      localStorage.setItem(TOKEN_KEY, result.token);
+      setToken(result.token);
+      setUser(result.user);
+      return result.user;
+    },
     async login(email: string, password: string) {
-      const result = await api.login(email, password);
+      const result = await api.loginUser({ email, password });
       localStorage.setItem(TOKEN_KEY, result.token);
       setToken(result.token);
       setUser(result.user);
       return result.user;
     },
-    async register(name: string, email: string, password: string) {
-      const result = await api.register(name, email, password);
+    async sendOtp(email: string) {
+      await api.sendOtp(email);
+      return true;
+    },
+    async verifyOtp(email: string, otp: string) {
+      const result = await api.verifyOtp(email, otp);
       localStorage.setItem(TOKEN_KEY, result.token);
       setToken(result.token);
       setUser(result.user);
       return result.user;
     },
-    logout() {
+    async logout() {
+      try { await api.logoutUser(); } catch {}
       localStorage.removeItem(TOKEN_KEY);
       setToken(null);
       setUser(null);

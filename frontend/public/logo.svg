@@ -1,0 +1,46 @@
+<svg width="240" height="80" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&amp;display=swap');
+      .logo-text { font-family: 'Inter', sans-serif; font-weight: 900; }
+    </style>
+  </defs>
+  <!-- Dashed Border -->
+  <path 
+    d="M140,15 L45,15 A25,25 0 0,0 45,65 L140,65" 
+    fill="none" 
+    stroke="#001B41" 
+    stroke-width="5" 
+    stroke-dasharray="10,8" 
+    stroke-linecap="round"
+  />
+  
+  <!-- HYRE Text -->
+  <text 
+    x="55" 
+    y="55" 
+    class="logo-text"
+    font-size="48" 
+    fill="#001B41" 
+    letter-spacing="-2"
+  >HYRE</text>
+  
+  <!-- IN Background Square -->
+  <rect 
+    x="185" 
+    y="15" 
+    width="50" 
+    height="50" 
+    fill="#1E88E5" 
+    rx="4" 
+  />
+  
+  <!-- IN Text -->
+  <text 
+    x="192" 
+    y="51" 
+    class="logo-text"
+    font-size="40" 
+    fill="#FFFFFF"
+  >IN</text>
+</svg>

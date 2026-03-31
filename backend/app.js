@@ -42,8 +42,11 @@ app.use(
   })
 );
 
+const cookieParser = require('cookie-parser');
+
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 const sanitizeObject = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
@@ -88,6 +91,7 @@ app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/apply', require('./routes/applicationRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
+app.use('/api/companies', require('./routes/companyRoutes'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

@@ -21,7 +21,9 @@ const validate = (schema) => (req, res, next) => {
 const registerSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).max(100).required(),
+  password: Joi.string().min(6).required().messages({
+    'string.min': 'Password must be at least 6 characters long.',
+  }),
 });
 
 const loginSchema = Joi.object({

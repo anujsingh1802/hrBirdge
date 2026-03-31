@@ -110,10 +110,13 @@ async function request<T>(path: string, init: RequestInit = {}, token?: string, 
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(buildUrl(path, params), {
+  const fetchOptions: RequestInit = {
     ...init,
     headers,
-  });
+    credentials: init.credentials || 'include',
+  };
+
+  const response = await fetch(buildUrl(path, params), fetchOptions);
 
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;
@@ -215,22 +218,48 @@ export interface JobPayload {
   description: string;
 }
 
-export async function login(email: string, password: string) {
-  const data = await request<{ token: string; user: BackendUser; message: string }>('/auth/login', {
+export async function sendOtp(email: string) {
+  return request<{ message: string; success: boolean }>('/auth/send-otp', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email }),
   });
+}
 
+export async function verifyOtp(email: string, otp: string) {
+  const data = await request<{ token: string; user: BackendUser; message: string }>('/auth/verify-otp', {
+    method: 'POST',
+    body: JSON.stringify({ email, otp }),
+  });
   return { token: data.token, user: normalizeUser(data.user), message: data.message };
 }
 
-export async function register(name: string, email: string, password: string) {
+export async function registerUser(payload: { name: string; email: string; password: string }) {
   const data = await request<{ token: string; user: BackendUser; message: string }>('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify(payload),
   });
-
   return { token: data.token, user: normalizeUser(data.user), message: data.message };
+}
+
+export async function loginUser(payload: { email: string; password: string }) {
+  const data = await request<{ token: string; user: BackendUser; message: string }>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return { token: data.token, user: normalizeUser(data.user), message: data.message };
+}
+
+export async function refreshAuth() {
+  const data = await request<{ token: string; success: boolean }>('/auth/refresh', {
+    method: 'POST',
+  });
+  return { token: data.token };
+}
+
+export async function logoutUser() {
+  return request<{ message: string; success: boolean }>('/auth/logout', {
+    method: 'POST',
+  });
 }
 
 export async function getMe(token: string) {
@@ -373,4 +402,31 @@ export async function uploadJobs(file: File, token: string) {
     method: 'POST',
     body: formData,
   }, token);
+}
+
+export interface Company {
+  _id: string;
+  name: string;
+  logo: string;
+  type: string;
+  location: string;
+  rating: number;
+  tags: string[];
+  description: string;
+}
+
+export interface CompanyFilters {
+  type?: string;
+  search?: string;
+  location?: string;
+  limit?: number;
+  page?: number;
+}
+
+export async function getCompanies(filters: CompanyFilters = {}): Promise<PaginatedResult<Company>> {
+  const data = await request<{ items: Company[]; pagination: BackendPagination }>('/companies', {}, undefined, filters as any);
+  return {
+    items: data.items,
+    pagination: data.pagination,
+  };
 }

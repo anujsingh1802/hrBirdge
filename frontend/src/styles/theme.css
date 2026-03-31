@@ -30,14 +30,14 @@
   --text-caption-line: 1rem; /* 16px */
   
   /* Primary Colors */
-  --primary-900: #1E1F3B;
-  --primary-700: #2E2F59;
-  --primary-500: #4F51A0;
+  --primary-900: #000E26;
+  --primary-700: #001B41;
+  --primary-500: #1E88E5;
 
   /* Accent Colors */
-  --accent-600: #7C3AED;
-  --accent-500: #8B5CF6;
-  --accent-400: #A78BFA;
+  --accent-600: #1976D2;
+  --accent-500: #1E88E5;
+  --accent-400: #42A5F5;
   --accent-100: #EEF2FF;
 
   /* Background Colors */

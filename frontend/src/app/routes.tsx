@@ -14,6 +14,8 @@ import { CreateEditJob } from "./pages/CreateEditJob";
 import { BulkUpload } from "./pages/BulkUpload";
 import { Applicants } from "./pages/Applicants";
 import { NotFound } from "./pages/NotFound";
+import { Companies } from "./pages/Companies";
+import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { RequireAdmin, RequireUser } from "./components/RouteGuards";
 
 function CandidateDashboardRoute() {
@@ -96,6 +98,18 @@ export const router = createBrowserRouter([
   {
     path: "/jobs",
     Component: JobListing,
+  },
+  {
+    path: "/companies",
+    Component: Companies,
+  },
+  {
+    path: "/services/*",
+    Component: PlaceholderPage,
+  },
+  {
+    path: "/employer/*",
+    Component: PlaceholderPage,
   },
   {
     path: "/jobs/:id",

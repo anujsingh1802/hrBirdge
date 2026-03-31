@@ -1,7 +1,7 @@
 {
-  "name": "job-portal-backend",
+  "name": "hr-bridge",
   "version": "1.0.0",
-  "description": "Production-ready Job Portal REST API",
+  "description": "Production-ready HYREIN REST API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,6 +16,7 @@
   "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "csvtojson": "^2.0.10",
     "dotenv": "^17.3.1",
@@ -27,6 +28,7 @@
     "mongoose": "^9.3.1",
     "morgan": "^1.10.0",
     "multer": "^2.1.1",
+    "nodemailer": "^8.0.4",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -91,9 +91,9 @@ export function JobListing() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)]">
-      <Navbar variant="public" />
+      <Navbar />
 
-      <div className="max-w-[var(--container-max)] mx-auto px-4 md:px-[var(--container-margin)] py-8"
+      <div className="max-w-[var(--container-max)] mx-auto px-4 md:px-[var(--container-margin)] pt-[120px] pb-8 md:pt-[140px] md:pb-12"
            style={{ animation: 'fadeInUp 0.45s ease both' }}>
 
         <div className="mb-8">

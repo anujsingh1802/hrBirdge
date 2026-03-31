@@ -1,9 +1,11 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
+const validateEmail = (email) => typeof email === 'string' && /^\S+@\S+\.\S+$/.test(email);
+
 /**
  * POST /api/auth/register
- * Public — create a new user account
+ * Public — create a new user account (email + password)
  */
 exports.register = async (req, res, next) => {
   try {
@@ -164,6 +166,74 @@ exports.uploadResume = async (req, res, next) => {
         createdAt: user.createdAt,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * POST /api/auth/send-otp
+ */
+exports.sendOtp = async (req, res) => {
+  return res.status(410).json({
+    success: false,
+    message: 'OTP auth removed. Use /api/auth/login with email and password.',
+  });
+};
+
+/**
+ * POST /api/auth/verify-otp
+ */
+exports.verifyOtp = async (req, res) => {
+  return res.status(410).json({
+    success: false,
+    message: 'OTP auth removed. Use /api/auth/login with email and password.',
+  });
+};
+
+/**
+ * POST /api/auth/refresh
+ */
+exports.refreshToken = async (req, res, next) => {
+  try {
+    const token = req.cookies.refreshToken;
+    if (!token) return res.status(401).json({ success: false, message: 'Not authenticated' });
+
+    const jwt = require('jsonwebtoken');
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (e) {
+      return res.status(401).json({ success: false, message: 'Invalid refresh token' });
+    }
+
+    const user = await User.findById(decoded.id);
+    if (!user || user.refreshToken !== token) {
+      return res.status(401).json({ success: false, message: 'Invalid refresh token database match' });
+    }
+
+    const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    res.status(200).json({ success: true, token: accessToken });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * POST /api/auth/logout
+ */
+exports.logout = async (req, res, next) => {
+  try {
+    const token = req.cookies.refreshToken;
+    if (token) {
+      res.clearCookie('refreshToken');
+      const jwt = require('jsonwebtoken');
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        await User.findByIdAndUpdate(decoded.id, { refreshToken: null });
+      } catch (e) {}
+    }
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
   } catch (err) {
     next(err);
   }
