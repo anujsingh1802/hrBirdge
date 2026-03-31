@@ -33,7 +33,12 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (curl, Postman, server-to-server)
       if (!origin) return callback(null, true);
-      if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+      
+      // Check if origin is explicitly allowed OR is a Vercel deployment
+      if (ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+      
       return callback(new Error(`CORS: origin "${origin}" not allowed`));
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -41,6 +46,7 @@ app.use(
     credentials: true,
   })
 );
+
 
 const cookieParser = require('cookie-parser');
 
