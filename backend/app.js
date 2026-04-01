@@ -23,10 +23,16 @@ app.use((req, res, next) => {
 
 app.use(helmet());
 
-const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:3000')
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '')
   .split(',')
+  .filter(Boolean)
   .map((o) => o.trim())
-  .concat(['http://127.0.0.1:3000', 'http://localhost:3000']);
+  .concat([
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://www.hyrein.in',
+    'https://hyrein.in'
+  ]);
 
 app.use(
   cors({
