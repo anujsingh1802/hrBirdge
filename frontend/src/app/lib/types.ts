@@ -59,3 +59,22 @@ export interface PaginatedResult<T> {
   items: T[];
   pagination: Pagination;
 }
+
+// ─── Blog Types ───────────────────────────────────────────────────────────────
+
+export type ContentBlockType = 'text' | 'image' | 'video';
+
+export interface ContentBlock {
+  type: ContentBlockType;
+  value: string;
+}
+
+export interface Blog {
+  _id: string;
+  title: string;
+  slug: string;
+  thumbnail: string;
+  content: ContentBlock[];
+  author: { _id: string; name: string } | string;
+  createdAt: string;
+}

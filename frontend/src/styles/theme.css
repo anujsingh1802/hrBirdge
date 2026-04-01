@@ -206,6 +206,7 @@
     font-family: var(--font-body);
     background-image: var(--gradient-surface);
     min-height: 100vh;
+    padding-top: 88px;
     transition: background-color 250ms ease, color 250ms ease;
   }
 

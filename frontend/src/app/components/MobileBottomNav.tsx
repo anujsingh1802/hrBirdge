@@ -20,7 +20,7 @@ export function MobileBottomNav({ variant }: MobileBottomNavProps) {
     { to: "/admin", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/admin/jobs", icon: Briefcase, label: "Jobs" },
     { to: "/admin/applicants", icon: User, label: "Applicants" },
-    { to: "/admin/bulk-upload", icon: FileText, label: "Upload" },
+    { to: "/admin/blogs", icon: FileText, label: "Blogs" },
   ];
 
   const links = variant === "candidate" ? candidateLinks : adminLinks;

@@ -56,8 +56,8 @@ app.use(
 
 const cookieParser = require('cookie-parser');
 
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
 const sanitizeObject = (obj) => {
@@ -83,7 +83,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later' },
@@ -120,6 +120,7 @@ app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/apply', require('./routes/applicationRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
 app.use('/api/companies', require('./routes/companyRoutes'));
+app.use('/api/blogs', require('./routes/blogRoutes'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

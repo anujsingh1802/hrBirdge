@@ -20,6 +20,10 @@ const Applicants       = lazy(() => import("./pages/Applicants").then(m => ({ de
 const NotFound         = lazy(() => import("./pages/NotFound").then(m => ({ default: m.NotFound })));
 const Companies        = lazy(() => import("./pages/Companies").then(m => ({ default: m.Companies })));
 const PlaceholderPage  = lazy(() => import("./pages/PlaceholderPage").then(m => ({ default: m.PlaceholderPage })));
+const BlogList         = lazy(() => import("./pages/BlogList").then(m => ({ default: m.BlogList })));
+const BlogDetail       = lazy(() => import("./pages/BlogDetail").then(m => ({ default: m.BlogDetail })));
+const ManageBlogs      = lazy(() => import("./pages/ManageBlogs").then(m => ({ default: m.ManageBlogs })));
+const CreateEditBlog   = lazy(() => import("./pages/CreateEditBlog").then(m => ({ default: m.CreateEditBlog })));
 
 // Wrap lazy components so Suspense is always present
 const S = ({ children }: { children: React.ReactNode }) => (
@@ -79,6 +83,18 @@ function BulkUploadRoute() {
 function ApplicantsRoute() {
   return (
     <S><RequireAdmin><Applicants /></RequireAdmin></S>
+  );
+}
+
+function ManageBlogsRoute() {
+  return (
+    <S><RequireAdmin><ManageBlogs /></RequireAdmin></S>
+  );
+}
+
+function CreateEditBlogRoute() {
+  return (
+    <S><RequireAdmin><CreateEditBlog /></RequireAdmin></S>
   );
 }
 
@@ -162,6 +178,26 @@ export const router = createBrowserRouter([
   {
     path: "/admin/applicants",
     element: <ApplicantsRoute />,
+  },
+  {
+    path: "/blogs",
+    element: <S><BlogList /></S>,
+  },
+  {
+    path: "/blog/:slug",
+    element: <S><BlogDetail /></S>,
+  },
+  {
+    path: "/admin/blogs",
+    element: <ManageBlogsRoute />,
+  },
+  {
+    path: "/admin/blogs/create",
+    element: <CreateEditBlogRoute />,
+  },
+  {
+    path: "/admin/blogs/:id/edit",
+    element: <CreateEditBlogRoute />,
   },
   {
     path: "*",

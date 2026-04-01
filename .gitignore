@@ -32,6 +32,8 @@ desktop.ini
 dist/
 build/
 *.tsbuildinfo
+build_output.txt
+tmp/
 
 # Frontend specific
 frontend/dist/

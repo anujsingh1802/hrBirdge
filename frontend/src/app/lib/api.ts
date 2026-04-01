@@ -1,4 +1,4 @@
-import type { Application, ApplicationStatus, AuthUser, Job, PaginatedResult } from './types';
+import type { Application, ApplicationStatus, AuthUser, Blog, Job, PaginatedResult } from './types';
 
 // @ts-ignore - Vite environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -429,4 +429,37 @@ export async function getCompanies(filters: CompanyFilters = {}): Promise<Pagina
     items: data.items,
     pagination: data.pagination,
   };
+}
+
+// ─── Blog API ─────────────────────────────────────────────────────────────────
+
+export async function getBlogs(params: { page?: number; limit?: number } = {}): Promise<{ items: Blog[]; pagination: BackendPagination }> {
+  const data = await request<{ data: Blog[]; pagination: BackendPagination }>('/blogs', {}, undefined, params as any);
+  return { items: data.data, pagination: data.pagination };
+}
+
+export async function getBlogBySlug(slug: string): Promise<Blog> {
+  const data = await request<{ data: Blog }>(`/blogs/${slug}`);
+  return data.data;
+}
+
+export async function createBlog(formData: FormData, token: string): Promise<Blog> {
+  const data = await request<{ data: Blog }>('/blogs', { method: 'POST', body: formData }, token);
+  return data.data;
+}
+
+export async function updateBlog(id: string, formData: FormData, token: string): Promise<Blog> {
+  const data = await request<{ data: Blog }>(`/blogs/${id}`, { method: 'PUT', body: formData }, token);
+  return data.data;
+}
+
+export async function deleteBlog(id: string, token: string) {
+  return request<{ message: string; success: boolean }>(`/blogs/${id}`, { method: 'DELETE' }, token);
+}
+
+export async function uploadBlogMedia(file: File, token: string): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const data = await request<{ url: string; success: boolean }>('/blogs/upload-media', { method: 'POST', body: formData }, token);
+  return data.url;
 }

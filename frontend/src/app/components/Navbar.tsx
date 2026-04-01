@@ -5,7 +5,7 @@ import {
   Briefcase, Search, Bell, MessageSquare, 
   User, Menu, X, LogOut, Settings, Bookmark, 
   ChevronDown, Building2, MapPin, Clock, ArrowRight, FileText,
-  Zap
+  Zap, Plus
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getJobs } from "../lib/api";
@@ -298,6 +298,9 @@ function DesktopMenu() {
       <Link to="/companies" className={`px-4 py-2 text-[15px] font-medium transition-colors duration-200 hover:text-blue-600 ${location.pathname === '/companies' ? "text-blue-600 font-semibold" : "text-slate-600"}`}>
         Companies
       </Link>
+      <Link to="/blogs" className={`px-4 py-2 text-[15px] font-medium transition-colors duration-200 hover:text-blue-600 ${location.pathname === '/blogs' ? "text-blue-600 font-semibold" : "text-slate-600"}`}>
+        Blog
+      </Link>
       <ServicesMegaMenu />
     </div>
   );
@@ -352,6 +355,18 @@ function UserDropdown({ user, logout }: { user: any; logout: () => void }) {
             <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors">
               <User className="w-4 h-4" /> Profile
             </Link>
+
+            {user?.role === 'admin' && (
+              <>
+                <Link to="/admin/jobs/create" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors">
+                  <Plus className="w-4 h-4" /> Add New Job
+                </Link>
+                <Link to="/admin/blogs/create" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors">
+                  <Plus className="w-4 h-4" /> Add New Blog
+                </Link>
+              </>
+            )}
+
             <Link to="/my-applications" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-colors">
               <Briefcase className="w-4 h-4" /> My Applications
             </Link>
@@ -410,7 +425,22 @@ function MobileDrawer({ isOpen, onClose, isAuthenticated, user, logout }: any) {
             <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-2">
               <Link to="/jobs" onClick={onClose} className="px-4 py-3 text-base font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition-colors">Jobs</Link>
               <Link to="/companies" onClick={onClose} className="px-4 py-3 text-base font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition-colors">Companies</Link>
+              <Link to="/blogs" onClick={onClose} className="px-4 py-3 text-base font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition-colors">Blog</Link>
               <Link to="/services" onClick={onClose} className="px-4 py-3 text-base font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition-colors">Services</Link>
+
+              <div className="h-px bg-slate-100 my-4" />
+
+              {isAuthenticated && user?.role === 'admin' && (
+                <>
+                  <Link to="/admin/jobs/create" onClick={onClose} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition-colors">
+                    <Plus className="w-4 h-4" /> Add New Job
+                  </Link>
+                  <Link to="/admin/blogs/create" onClick={onClose} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition-colors">
+                    <Plus className="w-4 h-4" /> Add New Blog
+                  </Link>
+                  <div className="h-px bg-slate-100 my-2" />
+                </>
+              )}
               
               <div className="h-px bg-slate-100 my-4" />
 

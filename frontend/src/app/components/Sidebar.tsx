@@ -21,6 +21,7 @@ export function Sidebar({ variant }: SidebarProps) {
     { to: "/admin/jobs", icon: Briefcase, label: "Manage Jobs" },
     { to: "/admin/applicants", icon: Users, label: "Applicants" },
     { to: "/admin/bulk-upload", icon: Upload, label: "Bulk Upload" },
+    { to: "/admin/blogs", icon: FileText, label: "Manage Blogs" },
     { to: "/profile", icon: User, label: "Profile" },
   ];
 
