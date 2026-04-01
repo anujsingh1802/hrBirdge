@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { Search, MapPin, BriefcaseBusiness, Laptop, Clock3, Building2, CheckCircle, FileText, Zap } from "lucide-react";
+import { Search, MapPin, BriefcaseBusiness, Laptop, Clock3, Building2, CheckCircle, FileText, Zap, User, Briefcase } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { Button } from "../components/ui/button";
@@ -15,6 +15,16 @@ export function Home() {
   const [location, setLocation] = useState("");
   const [featuredJobs, setFeaturedJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const heroAssets = ["/hero-1.png", "/hero-2.png"];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroAssets.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [heroAssets.length]);
 
   useEffect(() => {
     let mounted = true;
@@ -121,12 +131,14 @@ export function Home() {
               </p>
               
               <div className="flex flex-wrap items-center gap-3 mb-10">
-                 <div className="flex items-center gap-2 text-sm font-bold text-slate-700 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
-                   🏢 For Employers
-                 </div>
-                 <div className="flex items-center gap-2 text-sm font-bold text-slate-700 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
-                   👨‍💻 For Job Seekers
-                 </div>
+                 <button className="flex items-center gap-2.5 text-sm font-bold text-slate-700 bg-slate-50 border border-slate-200 px-5 py-2.5 rounded-full shadow-sm hover:bg-slate-100 hover:border-slate-300 transition-all group">
+                   <Briefcase size={18} className="text-blue-600 group-hover:scale-110 transition-transform" />
+                   For Employers
+                 </button>
+                 <button className="flex items-center gap-2.5 text-sm font-bold text-slate-700 bg-slate-50 border border-slate-200 px-5 py-2.5 rounded-full shadow-sm hover:bg-slate-100 hover:border-slate-300 transition-all group">
+                   <User size={18} className="text-blue-600 group-hover:scale-110 transition-transform" />
+                   For Job Seekers
+                 </button>
               </div>
 
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="bg-white p-2 flex flex-col md:flex-row gap-2" style={{ borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-md)" }}>
@@ -159,9 +171,49 @@ export function Home() {
               </form>
             </div>
 
-            <div className="hidden md:block">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-[var(--accent-100)] to-[var(--accent-500)]/20 flex items-center justify-center">
-                <BriefcaseBusiness className="w-32 h-32 text-[var(--accent-500)]/30" />
+            <div className="hidden md:block relative group">
+              <div className="aspect-square rounded-2xl bg-slate-100 overflow-hidden relative shadow-2xl border-4 border-white">
+                {heroAssets.map((asset, index) => (
+                  <div
+                    key={asset}
+                    className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${
+                      index === currentImageIndex 
+                        ? "opacity-100 scale-100 translate-x-0" 
+                        : "opacity-0 scale-110 translate-x-full"
+                    }`}
+                  >
+                    <img 
+                      src={asset} 
+                      alt="Hero Background" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {heroAssets.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`h-1.5 rounded-full transition-all duration-500 ${
+                        index === currentImageIndex ? "w-8 bg-blue-500" : "w-2 bg-slate-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Floating Badge */}
+              <div className="absolute -top-4 -right-4 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 animate-bounce hidden lg:block">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <CheckCircle className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Hiring Status</p>
+                    <p className="text-sm font-bold text-slate-800">Verified Jobs Only</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
