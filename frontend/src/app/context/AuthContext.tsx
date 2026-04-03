@@ -4,6 +4,23 @@ import type { AuthUser } from '../lib/types';
 import * as api from '../lib/api';
 
 const TOKEN_KEY = 'jobportal_token';
+const OAUTH_TOKEN_PARAM = 'token';
+
+function consumeOAuthRedirectToken() {
+  const url = new URL(window.location.href);
+  const redirectedToken = url.searchParams.get(OAUTH_TOKEN_PARAM);
+
+  if (!redirectedToken) {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  // Persist the OAuth token immediately, then remove it from the visible URL.
+  localStorage.setItem(TOKEN_KEY, redirectedToken);
+  url.searchParams.delete(OAUTH_TOKEN_PARAM);
+  window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+
+  return redirectedToken;
+}
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -23,7 +40,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState<string | null>(() => consumeOAuthRedirectToken());
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,34 +49,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const bootstrap = async () => {
       try {
-        let currentToken = token;
-        
-        if (!currentToken) {
-           try {
-             const result = await api.refreshAuth();
-             currentToken = result.token;
-             localStorage.setItem(TOKEN_KEY, currentToken);
-             if (mounted) setToken(currentToken);
-           } catch {
-             if (mounted) setLoading(false);
-             return;
-           }
+        if (!token) {
+          if (mounted) {
+            setUser(null);
+          }
+          return;
         }
 
         try {
-          const me = await api.getMe(currentToken);
+          const me = await api.getMe(token);
           if (mounted) setUser(me);
         } catch {
-          try {
-             const result = await api.refreshAuth();
-             currentToken = result.token;
-             localStorage.setItem(TOKEN_KEY, currentToken);
-             if (mounted) setToken(currentToken);
-             const me = await api.getMe(currentToken);
-             if (mounted) setUser(me);
-          } catch {
-             throw new Error('Session expired');
-          }
+          throw new Error('Session expired');
         }
       } catch {
         localStorage.removeItem(TOKEN_KEY);

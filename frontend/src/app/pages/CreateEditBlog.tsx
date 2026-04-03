@@ -29,6 +29,13 @@ interface ContentBlockDraft extends ContentBlock {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const uid = () => Math.random().toString(36).slice(2, 9);
+const MAX_THUMBNAIL_SIZE_MB = 5;
+const ALLOWED_THUMBNAIL_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
 
 const BLOCK_ICONS: Record<ContentBlockType, React.ReactNode> = {
   text: <Type className="w-4 h-4" />,
@@ -342,6 +349,20 @@ export function CreateEditBlog() {
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!ALLOWED_THUMBNAIL_TYPES.has(file.type)) {
+      setError("Thumbnail must be a JPG, PNG, WEBP, or GIF image.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_THUMBNAIL_SIZE_MB * 1024 * 1024) {
+      setError(`Thumbnail must be smaller than ${MAX_THUMBNAIL_SIZE_MB}MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    setError("");
     setThumbnailFile(file);
     setThumbnailPreview(URL.createObjectURL(file));
     e.target.value = "";
@@ -489,7 +510,7 @@ export function CreateEditBlog() {
                       <Upload className="w-10 h-10 text-[var(--text-muted)] opacity-40 mb-3" />
                       <span className="text-sm text-[var(--text-muted)]">Click to upload thumbnail</span>
                       <span className="text-xs text-[var(--text-muted)] opacity-60 mt-1">
-                        JPG, PNG, WEBP — Recommended 1200×630px
+                        JPG, PNG, WEBP, GIF up to 5MB - Recommended 1200x630px
                       </span>
                     </label>
                   )}
@@ -604,6 +625,11 @@ export function CreateEditBlog() {
                     <Link to="/admin/blogs">Cancel</Link>
                   </Button>
                 </div>
+                {error && (
+                  <div className="rounded-2xl border border-[var(--status-rejected-bg)] bg-[var(--status-rejected-bg)] p-4 text-sm text-[var(--status-rejected-text)]">
+                    {error}
+                  </div>
+                )}
               </form>
             )}
           </div>

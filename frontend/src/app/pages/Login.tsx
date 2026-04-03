@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { ApiError } from "../lib/api";
+import { AUTH_BASE_URL, ApiError } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { Navbar } from "../components/Navbar";
 import { Loader2 } from "lucide-react";
@@ -43,6 +43,10 @@ export function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.assign("/auth/google");
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col">
       <Navbar />
@@ -50,7 +54,7 @@ export function Login() {
         <div className="w-full max-w-md bg-[var(--bg-surface)] p-8 border border-[var(--border-soft)]" style={{ borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-md)" }}>
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-[var(--text-strong)] mb-2">Login</h1>
-            <p className="text-[var(--text-muted)]">Sign in with your email and password.</p>
+            <p className="text-[var(--text-muted)]">Sign in with your email and password, or continue with Google for one-tap access.</p>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -72,6 +76,29 @@ export function Login() {
               {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
               Sign In
             </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-[var(--border-soft)]" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-[var(--bg-surface)] px-3 text-[var(--text-muted)]">or</span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleLogin}
+              disabled={submitting}
+              className="w-full h-12 font-semibold"
+            >
+              Continue with Google
+            </Button>
+
+            <p className="text-center text-xs text-[var(--text-muted)]">
+              New here? Google sign-in creates your candidate account instantly.
+            </p>
           </form>
 
           <div className="mt-6 text-center text-sm text-[var(--text-muted)]">

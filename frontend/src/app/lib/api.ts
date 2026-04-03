@@ -2,6 +2,11 @@ import type { Application, ApplicationStatus, AuthUser, Blog, Job, PaginatedResu
 
 // @ts-ignore - Vite environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+export const AUTH_BASE_URL = import.meta.env.DEV
+  ? 'http://127.0.0.1:5000'
+  : API_BASE_URL.startsWith('http')
+    ? API_BASE_URL.replace(/\/api\/?$/, '')
+    : window.location.origin;
 
 interface ApiErrorShape {
   message?: string;
@@ -22,12 +27,13 @@ interface BackendUser {
   _id?: string;
   name: string;
   email: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'candidate' | 'admin';
   bio?: string;
   skills?: string[];
   resumeUrl?: string;
   location?: string;
   createdAt?: string;
+  profilePicture?: string;
 }
 
 interface BackendJob {

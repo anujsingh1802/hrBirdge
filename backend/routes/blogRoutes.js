@@ -19,7 +19,9 @@ router.get('/:slug', getBlogBySlug);
 
 // ─── Admin-only routes ────────────────────────────────────────────────────────
 router.post('/upload-media', protect, adminOnly, blogMediaUpload.single('file'), uploadMedia);
+
 router.post('/', protect, adminOnly, blogMediaUpload.single('thumbnail'), createBlog);
+
 router.put('/:id', protect, adminOnly, blogMediaUpload.single('thumbnail'), updateBlog);
 router.delete('/:id', protect, adminOnly, deleteBlog);
 

@@ -4,9 +4,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const passport = require('passport');
 
 require('dotenv').config();
 
+const initializeGoogleStrategy = require('./modules/auth/auth.google.strategy');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 const app = express();
@@ -28,8 +30,6 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '')
   .filter(Boolean)
   .map((o) => o.trim())
   .concat([
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
     'https://www.hyrein.in',
     'https://hyrein.in'
   ]);
@@ -59,6 +59,8 @@ const cookieParser = require('cookie-parser');
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
+initializeGoogleStrategy();
+app.use(passport.initialize());
 
 const sanitizeObject = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
@@ -116,6 +118,7 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
+app.use('/auth', authLimiter, require('./modules/auth/auth.routes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/apply', require('./routes/applicationRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
@@ -138,16 +141,8 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 app.use(notFound);
-
-// Custom Error Handler to hide stack in production
-app.use((err, req, res, next) => {
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode).json({
-    success: false,
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
-  });
-});
+app.use(errorHandler);
 
 
 module.exports = app;
+

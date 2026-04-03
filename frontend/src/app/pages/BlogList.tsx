@@ -23,6 +23,40 @@ function SkeletonCard() {
   );
 }
 
+function BlogImage({ src, alt, titleInitial }: { src: string; alt: string; titleInitial: string }) {
+  const [hasError, setHasError] = useState(false);
+
+  if (!src || hasError) {
+    return (
+      <div
+        className="w-full flex items-center justify-center"
+        style={{
+          height: "160px",
+          background: "linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%)",
+        }}
+      >
+        <span className="text-white text-4xl font-bold opacity-30 select-none">
+          {titleInitial}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden">
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        style={{ display: "block" }}
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+}
+
 // ─── Blog Card ─────────────────────────────────────────────────────────────────
 
 function BlogCard({ blog }: { blog: Blog }) {
@@ -40,29 +74,11 @@ function BlogCard({ blog }: { blog: Blog }) {
       style={{ borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-sm)" }}
     >
       {/* Thumbnail */}
-      {blog.thumbnail ? (
-        <div className="overflow-hidden">
-          <img
-            src={blog.thumbnail}
-            alt={blog.title}
-            loading="lazy"
-            className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            style={{ display: "block" }}
-          />
-        </div>
-      ) : (
-        <div
-          className="w-full flex items-center justify-center"
-          style={{
-            height: "160px",
-            background: "linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%)",
-          }}
-        >
-          <span className="text-white text-4xl font-bold opacity-30 select-none">
-            {blog.title.charAt(0).toUpperCase()}
-          </span>
-        </div>
-      )}
+      <BlogImage
+        src={blog.thumbnail || ""}
+        alt={blog.title}
+        titleInitial={blog.title.charAt(0).toUpperCase()}
+      />
 
       {/* Content */}
       <div className="p-4">

@@ -28,7 +28,7 @@ export function RequireUser({ children }: { children: ReactNode }) {
 
   if (loading) return <FullPageLoader />;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== 'user') return <Navigate to="/admin" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin" replace />;
 
   return <>{children}</>;
 }

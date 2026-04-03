@@ -13,6 +13,62 @@ const getResourceType = (mimetype) => {
   return 'image';
 };
 
+const BLOG_BLOCK_TYPES = new Set(['text', 'image', 'video']);
+
+const invalidContentError = (message = 'Invalid content format') => {
+  const error = new Error(message);
+  error.statusCode = 400;
+  return error;
+};
+
+const normalizeContentBlocks = (content) => {
+  if (content === undefined || content === null || content === '') {
+    return [];
+  }
+
+  let parsed = content;
+
+  if (typeof parsed === 'string') {
+    const trimmed = parsed.trim();
+
+    if (!trimmed) {
+      return [];
+    }
+
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch {
+      // Be tolerant when older clients submit plain text instead of serialized blocks.
+      parsed = [{ type: 'text', value: trimmed }];
+    }
+  }
+
+  if (!Array.isArray(parsed) && parsed && typeof parsed === 'object') {
+    parsed = Object.values(parsed);
+  }
+
+  if (!Array.isArray(parsed)) {
+    throw invalidContentError();
+  }
+
+  return parsed
+    .map((block) => {
+      if (!block || typeof block !== 'object') {
+        throw invalidContentError();
+      }
+
+      const type = typeof block.type === 'string' ? block.type.trim() : '';
+      const value = typeof block.value === 'string' ? block.value : '';
+
+      if (!BLOG_BLOCK_TYPES.has(type) || !value.trim()) {
+        throw invalidContentError('Each content block must have a valid type and value');
+      }
+
+      return { type, value };
+    })
+    .filter((block) => block.value.trim());
+};
+
 // ─── Controllers ──────────────────────────────────────────────────────────────
 
 /**
@@ -51,14 +107,7 @@ exports.createBlog = async (req, res, next) => {
     }
 
     // Parse content if sent as a JSON string (FormData)
-    let parsedContent = [];
-    if (content) {
-      try {
-        parsedContent = typeof content === 'string' ? JSON.parse(content) : content;
-      } catch {
-        return res.status(400).json({ success: false, message: 'Invalid content format' });
-      }
-    }
+    const parsedContent = normalizeContentBlocks(content);
 
     let thumbnail = '';
     if (req.file) {
@@ -93,14 +142,15 @@ exports.updateBlog = async (req, res, next) => {
 
     const { title, content } = req.body;
 
-    if (title) blog.title = title.trim();
-
-    if (content) {
-      try {
-        blog.content = typeof content === 'string' ? JSON.parse(content) : content;
-      } catch {
-        return res.status(400).json({ success: false, message: 'Invalid content format' });
+    if (title !== undefined) {
+      if (!title.trim()) {
+        return res.status(400).json({ success: false, message: 'Blog title cannot be empty' });
       }
+      blog.title = title.trim();
+    }
+
+    if (content !== undefined) {
+      blog.content = normalizeContentBlocks(content);
     }
 
     if (req.file) {
@@ -148,7 +198,7 @@ exports.getBlogs = async (req, res, next) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .select('title slug thumbnail createdAt author')
+        .select('title slug thumbnail createdAt author content')
         .populate('author', 'name'),
       Blog.countDocuments(),
     ]);

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const ROLES = ['user', 'admin'];
+const ROLES = ['user', 'candidate', 'admin'];
 
 const userSchema = new mongoose.Schema(
   {
@@ -23,6 +23,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       minlength: [6, 'Password must be at least 6 characters'],
       select: false,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
+    profilePicture: {
+      type: String,
+      default: '',
+      trim: true,
     },
     isVerified: { type: Boolean, default: false },
     otp: { type: String },

@@ -7,6 +7,8 @@ const Home             = lazy(() => import("./pages/Home").then(m => ({ default:
 const JobListing       = lazy(() => import("./pages/JobListing").then(m => ({ default: m.JobListing })));
 const JobDetail        = lazy(() => import("./pages/JobDetail").then(m => ({ default: m.JobDetail })));
 const Login            = lazy(() => import("./pages/Login").then(m => ({ default: m.Login })));
+const GoogleAuthStart = lazy(() => import("./pages/GoogleAuthStart").then(m => ({ default: m.GoogleAuthStart })));
+const GoogleAuthCallback = lazy(() => import("./pages/GoogleAuthCallback").then(m => ({ default: m.GoogleAuthCallback })));
 const Register         = lazy(() => import("./pages/Register").then(m => ({ default: m.Register })));
 const CandidateDashboard = lazy(() => import("./pages/CandidateDashboard").then(m => ({ default: m.CandidateDashboard })));
 const MyApplications   = lazy(() => import("./pages/MyApplications").then(m => ({ default: m.MyApplications })));
@@ -126,6 +128,14 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <S><Login /></S>,
+  },
+  {
+    path: "/auth/google",
+    element: <S><GoogleAuthStart /></S>,
+  },
+  {
+    path: "/auth/google/callback",
+    element: <S><GoogleAuthCallback /></S>,
   },
   {
     path: "/register",

@@ -23,6 +23,8 @@ function getYouTubeEmbedUrl(url: string): string | null {
 // ─── Content Block Renderer ────────────────────────────────────────────────────
 
 function ContentBlockRenderer({ block }: { block: ContentBlock }) {
+  const [imageError, setImageError] = useState(false);
+
   switch (block.type) {
     case "text":
       return (
@@ -32,13 +34,23 @@ function ContentBlockRenderer({ block }: { block: ContentBlock }) {
       );
 
     case "image":
+      if (imageError) {
+        return (
+          <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--bg-surface)] px-4 py-8 text-center text-sm text-[var(--text-muted)]">
+            This image could not be loaded.
+          </div>
+        );
+      }
+
       return (
         <div className="my-2 overflow-hidden rounded-2xl">
           <img
             src={block.value}
             alt="Blog content"
             loading="lazy"
+            referrerPolicy="no-referrer"
             className="w-full h-auto object-cover"
+            onError={() => setImageError(true)}
           />
         </div>
       );
@@ -99,6 +111,7 @@ export function BlogDetail() {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [heroImageError, setHeroImageError] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -154,13 +167,15 @@ export function BlogDetail() {
         {!loading && blog && (
           <>
             {/* Hero thumbnail */}
-            {blog.thumbnail && (
+            {blog.thumbnail && !heroImageError && (
               <div className="w-full overflow-hidden" style={{ maxHeight: "480px" }}>
                 <img
                   src={blog.thumbnail}
                   alt={blog.title}
+                  referrerPolicy="no-referrer"
                   className="w-full object-cover"
                   style={{ maxHeight: "480px" }}
+                  onError={() => setHeroImageError(true)}
                 />
               </div>
             )}
