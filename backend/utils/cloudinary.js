@@ -16,6 +16,10 @@ cloudinary.config({
  */
 const uploadBuffer = (buffer, resourceType = 'image', folder = 'hyrein-blog') => {
   return new Promise((resolve, reject) => {
+    if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_SECRET) {
+      return reject(new Error('Cloudinary credentials (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) are missing in the server environment variables. Please add them to your Render dashboard.'));
+    }
+  
     const stream = cloudinary.uploader.upload_stream(
       { resource_type: resourceType, folder },
       (error, result) => {

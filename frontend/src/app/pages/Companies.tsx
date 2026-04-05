@@ -5,6 +5,7 @@ import { getCompanies, Company } from "../lib/api";
 import { Search, MapPin, Building2, Star } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { CompanyLogo } from "../components/CompanyLogo";
 
 const COMPANY_TYPES = ["MNC", "Startup", "Fintech", "Edtech"];
 
@@ -76,8 +77,12 @@ export function Companies() {
             {companies.map(company => (
               <div key={company._id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all flex flex-col h-full group">
                  <div className="flex items-start justify-between mb-5">
-                    <div className="w-16 h-16 rounded-xl border border-slate-100 p-2.5 bg-white shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform">
-                      <img src={company.logo || "https://dummyimage.com/100"} alt={company.name} className="w-full h-full object-contain" />
+                    <div className="w-16 h-16 rounded-xl border border-slate-100 p-2.5 bg-white shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden relative">
+                      <CompanyLogo 
+                        name={company.name} 
+                        defaultLogoUrl={company.logo} 
+                        className="w-full h-full" 
+                      />
                     </div>
                     <div className="flex items-center gap-1.5 bg-yellow-50 text-yellow-700 px-2.5 py-1.5 rounded-lg text-sm font-bold border border-yellow-100/50">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-500" />

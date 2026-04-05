@@ -124,6 +124,7 @@ app.use('/api/apply', require('./routes/applicationRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
 app.use('/api/companies', require('./routes/companyRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
+app.use('/api/logos', require('./routes/logoRoutes'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

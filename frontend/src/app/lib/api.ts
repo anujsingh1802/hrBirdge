@@ -437,6 +437,11 @@ export async function getCompanies(filters: CompanyFilters = {}): Promise<Pagina
   };
 }
 
+export async function getCompanyLogo(companyName: string): Promise<string> {
+  const data = await request<{ logoUrl: string }>('/logos/' + encodeURIComponent(companyName));
+  return data.logoUrl;
+}
+
 // ─── Blog API ─────────────────────────────────────────────────────────────────
 
 export async function getBlogs(params: { page?: number; limit?: number } = {}): Promise<{ items: Blog[]; pagination: BackendPagination }> {
