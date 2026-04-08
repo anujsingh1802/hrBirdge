@@ -4,11 +4,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const passport = require('passport');
-
 require('dotenv').config();
 
-const initializeGoogleStrategy = require('./modules/auth/auth.google.strategy');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 const app = express();
@@ -32,7 +29,10 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '')
   .concat([
     'https://hyrein.in',
     'https://www.hyrein.in',
-    'http://localhost:3000'
+    'http://localhost:3000',    // For frontend dev (old port)
+    'http://localhost:5173',    // For Vite dev server
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173'
   ]);
 
 app.use(
@@ -60,8 +60,6 @@ const cookieParser = require('cookie-parser');
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
-initializeGoogleStrategy();
-app.use(passport.initialize());
 
 const sanitizeObject = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
@@ -119,7 +117,6 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
-app.use('/auth', authLimiter, require('./modules/auth/auth.routes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/apply', require('./routes/applicationRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));

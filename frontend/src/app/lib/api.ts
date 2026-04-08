@@ -1,11 +1,27 @@
 import type { Application, ApplicationStatus, AuthUser, Blog, Job, PaginatedResult, Company, CompanyFilters, JobFilters } from './types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-export const AUTH_BASE_URL = import.meta.env.DEV
-  ? 'http://127.0.0.1:5000'
-  : API_BASE_URL.startsWith('http')
-    ? API_BASE_URL.replace(/\/api\/?$/, '')
-    : window.location.origin;
+// Determine API base URL based on environment
+const getApiBaseUrl = (): string => {
+  // In development, use environment variable or default to localhost:5000/api
+  if (import.meta.env.DEV) {
+    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  }
+  
+  // In production, use environment variable or derive from current origin
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Fallback to current origin + /api
+  return `${window.location.origin}/api`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Export for auth endpoints that might need the base domain without /api suffix
+export const AUTH_BASE_URL = API_BASE_URL.startsWith('http')
+  ? API_BASE_URL.replace(/\/api\/?$/, '')
+  : window.location.origin;
 
 interface ApiErrorShape {
   message?: string;
