@@ -287,7 +287,7 @@ export function CreateEditBlog() {
       .then(({ getBlogs }) => getBlogs({ limit: 100 }))
       .then(({ items }) => {
         if (!mounted) return;
-        const found = items.find((b) => b._id === id);
+        const found = items.find((b) => b.id === id);
         if (found) {
           setTitle(found.title);
           setThumbnailPreview(found.thumbnail || "");

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const sendEmail = require('../utils/sendEmail');
 
 const validateEmail = (email) => typeof email === 'string' && /^\S+@\S+\.\S+$/.test(email);
 
@@ -178,21 +179,89 @@ exports.uploadResume = async (req, res, next) => {
 /**
  * POST /api/auth/send-otp
  */
-exports.sendOtp = async (req, res) => {
-  return res.status(410).json({
-    success: false,
-    message: 'OTP auth removed. Use /api/auth/login with email and password.',
-  });
+exports.sendOtp = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!validateEmail(email)) return res.status(400).json({ success: false, message: 'Invalid email' });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    let user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      // Create a candidate user implicitly
+      user = await User.create({ name: 'Candidate User', email: normalizedEmail, role: 'candidate' });
+    }
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 15 * 60 * 1000; // 15 mins
+
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save({ validateBeforeSave: false });
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2>HyreIn Authentication</h2>
+        <p>Your one-time password (OTP) is:</p>
+        <h1 style="font-size: 32px; letter-spacing: 4px; color: #2563eb;">${otp}</h1>
+        <p>This code will expire in 15 minutes.</p>
+        <p>If you did not request this, please ignore this email.</p>
+      </div>
+    `;
+
+    await sendEmail({
+      email: user.email,
+      subject: 'Your HyreIn Login Code',
+      html,
+    });
+
+    res.status(200).json({ success: true, message: 'OTP sent successfully' });
+  } catch (err) {
+    next(err);
+  }
 };
 
 /**
  * POST /api/auth/verify-otp
  */
-exports.verifyOtp = async (req, res) => {
-  return res.status(410).json({
-    success: false,
-    message: 'OTP auth removed. Use /api/auth/login with email and password.',
-  });
+exports.verifyOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ success: false, message: 'Email and OTP are required' });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid OTP or email' });
+    }
+
+    if (user.otp !== otp || user.otpExpiry < Date.now()) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    // Clear OTP
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    const token = generateToken(user._id, user.role);
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 /**

@@ -157,7 +157,7 @@ export function BlogList() {
           <ResponsiveMasonry columnsCountBreakPoints={{ 0: 1, 640: 2, 1024: 3 }}>
             <Masonry gutter="20px">
               {blogs.map((blog) => (
-                <BlogCard key={blog._id} blog={blog} />
+                <BlogCard key={blog.id} blog={blog} />
               ))}
             </Masonry>
           </ResponsiveMasonry>

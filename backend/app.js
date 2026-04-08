@@ -30,8 +30,9 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '')
   .filter(Boolean)
   .map((o) => o.trim())
   .concat([
+    'https://hyrein.in',
     'https://www.hyrein.in',
-    'https://hyrein.in'
+    'http://localhost:3000'
   ]);
 
 app.use(
@@ -93,7 +94,7 @@ const globalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many login attempts, please try again later' },

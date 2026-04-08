@@ -1,6 +1,5 @@
-import type { Application, ApplicationStatus, AuthUser, Blog, Job, PaginatedResult } from './types';
+import type { Application, ApplicationStatus, AuthUser, Blog, Job, PaginatedResult, Company, CompanyFilters, JobFilters } from './types';
 
-// @ts-ignore - Vite environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 export const AUTH_BASE_URL = import.meta.env.DEV
   ? 'http://127.0.0.1:5000'
@@ -88,7 +87,11 @@ export class ApiError extends Error {
 }
 
 function buildUrl(path: string, params?: Record<string, string | number | undefined | null>) {
-  const url = new URL(`${API_BASE_URL}${path}`, window.location.origin);
+  // Ensure path starts with / and API_BASE_URL doesn't end with / to prevent double slashes
+  const cleanBase = API_BASE_URL.replace(/\/+$/, '');
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  
+  const url = new URL(`${cleanBase}${cleanPath}`, window.location.origin);
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -105,7 +108,7 @@ function buildUrl(path: string, params?: Record<string, string | number | undefi
   return `${url.pathname}${url.search}`;
 }
 
-async function request<T>(path: string, init: RequestInit = {}, token?: string, params?: Record<string, string | number | undefined | null>) {
+async function request<T>(path: string, init: RequestInit = {}, token?: string, params?: Record<string, string | number | undefined | null>): Promise<T> {
   const headers = new Headers(init.headers);
 
   if (!(init.body instanceof FormData) && !headers.has('Content-Type')) {
@@ -124,12 +127,26 @@ async function request<T>(path: string, init: RequestInit = {}, token?: string, 
 
   const response = await fetch(buildUrl(path, params), fetchOptions);
 
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data: any = null;
+  const contentType = response.headers.get('Content-Type');
+  
+  if (contentType?.includes('application/json')) {
+    try {
+      data = await response.json();
+    } catch (e) {
+      console.error('[API] Failed to parse JSON response:', e);
+    }
+  } else {
+    // Handle non-JSON responses (like HTML error pages)
+    data = { message: await response.text() || response.statusText };
+  }
 
   if (!response.ok) {
     const errorData = data as ApiErrorShape | null;
-    throw new ApiError(errorData?.message || 'Something went wrong', errorData?.errors);
+    throw new ApiError(
+      errorData?.message || `Request failed with status ${response.status}`,
+      errorData?.errors
+    );
   }
 
   return data as T;
@@ -200,16 +217,29 @@ function normalizeApplication(item: BackendApplication): Application {
   };
 }
 
-export interface JobFilters {
-  search?: string;
-  location?: string;
-  job_type?: string;
-  skills?: string;
-  salary_max?: number;
-  page?: number;
-  limit?: number;
-  sort?: string;
-  [key: string]: string | number | undefined | null;
+function normalizeCompany(item: any): Company {
+  return {
+    id: item.id || item._id,
+    name: item.name,
+    logo: item.logo,
+    type: item.type,
+    location: item.location,
+    rating: item.rating,
+    tags: item.tags || [],
+    description: item.description,
+  };
+}
+
+function normalizeBlog(item: any): Blog {
+  return {
+    id: item.id || item._id,
+    title: item.title,
+    slug: item.slug,
+    thumbnail: item.thumbnail,
+    content: item.content,
+    author: item.author,
+    createdAt: item.createdAt,
+  };
 }
 
 export interface JobPayload {
@@ -410,29 +440,10 @@ export async function uploadJobs(file: File, token: string) {
   }, token);
 }
 
-export interface Company {
-  _id: string;
-  name: string;
-  logo: string;
-  type: string;
-  location: string;
-  rating: number;
-  tags: string[];
-  description: string;
-}
-
-export interface CompanyFilters {
-  type?: string;
-  search?: string;
-  location?: string;
-  limit?: number;
-  page?: number;
-}
-
 export async function getCompanies(filters: CompanyFilters = {}): Promise<PaginatedResult<Company>> {
-  const data = await request<{ items: Company[]; pagination: BackendPagination }>('/companies', {}, undefined, filters as any);
+  const data = await request<{ items: any[]; pagination: BackendPagination }>('/companies', {}, undefined, filters as any);
   return {
-    items: data.items,
+    items: data.items.map(normalizeCompany),
     pagination: data.pagination,
   };
 }
@@ -444,24 +455,27 @@ export async function getCompanyLogo(companyName: string): Promise<string> {
 
 // ─── Blog API ─────────────────────────────────────────────────────────────────
 
-export async function getBlogs(params: { page?: number; limit?: number } = {}): Promise<{ items: Blog[]; pagination: BackendPagination }> {
-  const data = await request<{ data: Blog[]; pagination: BackendPagination }>('/blogs', {}, undefined, params as any);
-  return { items: data.data, pagination: data.pagination };
+export async function getBlogs(params: { page?: number; limit?: number } = {}): Promise<PaginatedResult<Blog>> {
+  const data = await request<{ data: any[]; pagination: BackendPagination }>('/blogs', {}, undefined, params as any);
+  return { 
+    items: data.data.map(normalizeBlog), 
+    pagination: data.pagination 
+  };
 }
 
 export async function getBlogBySlug(slug: string): Promise<Blog> {
-  const data = await request<{ data: Blog }>(`/blogs/${slug}`);
-  return data.data;
+  const data = await request<{ data: any }>(`/blogs/${slug}`);
+  return normalizeBlog(data.data);
 }
 
 export async function createBlog(formData: FormData, token: string): Promise<Blog> {
-  const data = await request<{ data: Blog }>('/blogs', { method: 'POST', body: formData }, token);
-  return data.data;
+  const data = await request<{ data: any }>('/blogs', { method: 'POST', body: formData }, token);
+  return normalizeBlog(data.data);
 }
 
 export async function updateBlog(id: string, formData: FormData, token: string): Promise<Blog> {
-  const data = await request<{ data: Blog }>(`/blogs/${id}`, { method: 'PUT', body: formData }, token);
-  return data.data;
+  const data = await request<{ data: any }>(`/blogs/${id}`, { method: 'PUT', body: formData }, token);
+  return normalizeBlog(data.data);
 }
 
 export async function deleteBlog(id: string, token: string) {

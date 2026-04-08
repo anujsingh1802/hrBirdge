@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
-import { getCompanies, Company } from "../lib/api";
+import { getCompanies } from "../lib/api";
+import type { Company } from "../lib/types";
 import { Search, MapPin, Building2, Star } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
@@ -75,7 +76,7 @@ export function Companies() {
         ) : companies.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {companies.map(company => (
-              <div key={company._id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all flex flex-col h-full group">
+              <div key={company.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all flex flex-col h-full group">
                  <div className="flex items-start justify-between mb-5">
                     <div className="w-16 h-16 rounded-xl border border-slate-100 p-2.5 bg-white shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden relative">
                       <CompanyLogo 

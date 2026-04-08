@@ -46,7 +46,7 @@ export function ManageBlogs() {
     if (!token || !window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
     try {
       await deleteBlog(id, token);
-      setBlogs((current) => current.filter((b) => b._id !== id));
+      setBlogs((current) => current.filter((b) => b.id !== id));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Unable to delete this blog.");
     }
@@ -130,7 +130,7 @@ export function ManageBlogs() {
                       </TableRow>
                     ) : (
                       filtered.map((blog) => (
-                        <TableRow key={blog._id}>
+                        <TableRow key={blog.id}>
                           <TableCell className="font-medium max-w-xs truncate">{blog.title}</TableCell>
                           <TableCell>
                             {typeof blog.author === "object" ? blog.author.name : "—"}
@@ -158,14 +158,14 @@ export function ManageBlogs() {
                                   </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                  <Link to={`/admin/blogs/${blog._id}/edit`}>
+                                  <Link to={`/admin/blogs/${blog.id}/edit`}>
                                     <Edit className="w-4 h-4 mr-2" />
                                     Edit
                                   </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   className="text-red-600 font-semibold"
-                                  onClick={() => handleDelete(blog._id, blog.title)}
+                                  onClick={() => handleDelete(blog.id, blog.title)}
                                 >
                                   <Trash2 className="w-4 h-4 mr-2" />
                                   Delete
@@ -189,7 +189,7 @@ export function ManageBlogs() {
                 ) : (
                   filtered.map((blog) => (
                     <div
-                      key={blog._id}
+                      key={blog.id}
                       className="bg-[var(--bg-surface)] p-4 border border-[var(--border-soft)]"
                       style={{ borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-sm)" }}
                     >
@@ -208,11 +208,11 @@ export function ManageBlogs() {
                               <Link to={`/blog/${blog.slug}`} target="_blank">View Live</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                              <Link to={`/admin/blogs/${blog._id}/edit`}>Edit</Link>
+                              <Link to={`/admin/blogs/${blog.id}/edit`}>Edit</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-600 font-semibold"
-                              onClick={() => handleDelete(blog._id, blog.title)}
+                              onClick={() => handleDelete(blog.id, blog.title)}
                             >
                               Delete
                             </DropdownMenuItem>
