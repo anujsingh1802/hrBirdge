@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { LayoutDashboard, Briefcase, FileText, User, Users, Upload } from "lucide-react";
+import { LayoutDashboard, Briefcase, FileText, User, Users, Upload, Settings } from "lucide-react";
 import { cn } from "./ui/utils";
 
 interface SidebarProps {
@@ -22,6 +22,7 @@ export function Sidebar({ variant }: SidebarProps) {
     { to: "/admin/applicants", icon: Users, label: "Applicants" },
     { to: "/admin/bulk-upload", icon: Upload, label: "Bulk Upload" },
     { to: "/admin/blogs", icon: FileText, label: "Manage Blogs" },
+    { to: "/admin/settings", icon: Settings, label: "Site Settings" },
     { to: "/profile", icon: User, label: "Profile" },
   ];
 

@@ -24,6 +24,7 @@ const BlogList         = lazy(() => import("./pages/BlogList").then(m => ({ defa
 const BlogDetail       = lazy(() => import("./pages/BlogDetail").then(m => ({ default: m.BlogDetail })));
 const ManageBlogs      = lazy(() => import("./pages/ManageBlogs").then(m => ({ default: m.ManageBlogs })));
 const CreateEditBlog   = lazy(() => import("./pages/CreateEditBlog").then(m => ({ default: m.CreateEditBlog })));
+const ManageSettings   = lazy(() => import("./pages/ManageSettings").then(m => ({ default: m.ManageSettings })));
 
 // Wrap lazy components so Suspense is always present
 const S = ({ children }: { children: React.ReactNode }) => (
@@ -95,6 +96,12 @@ function ManageBlogsRoute() {
 function CreateEditBlogRoute() {
   return (
     <S><RequireAdmin><CreateEditBlog /></RequireAdmin></S>
+  );
+}
+
+function ManageSettingsRoute() {
+  return (
+    <S><RequireAdmin><ManageSettings /></RequireAdmin></S>
   );
 }
 
@@ -198,6 +205,10 @@ export const router = createBrowserRouter([
   {
     path: "/admin/blogs/:id/edit",
     element: <CreateEditBlogRoute />,
+  },
+  {
+    path: "/admin/settings",
+    element: <ManageSettingsRoute />,
   },
   {
     path: "*",

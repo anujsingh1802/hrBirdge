@@ -109,3 +109,11 @@ export interface JobFilters {
   sort?: string;
   [key: string]: string | number | undefined | null;
 }
+
+export interface SiteConfig {
+  leftBannerImage: string;
+  leftBannerUrl: string;
+  rightBannerImage: string;
+  rightBannerUrl: string;
+  isBannerEnabled: boolean;
+}

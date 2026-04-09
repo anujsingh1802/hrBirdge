@@ -504,3 +504,19 @@ export async function uploadBlogMedia(file: File, token: string): Promise<string
   const data = await request<{ url: string; success: boolean }>('/blogs/upload-media', { method: 'POST', body: formData }, token);
   return data.url;
 }
+
+// ─── Settings API ─────────────────────────────────────────────────────────────
+
+export async function getSettings() {
+  const data = await request<{ data: import('./types').SiteConfig }>('/settings');
+  return data.data;
+}
+
+export async function updateSettings(token: string, payload: Partial<import('./types').SiteConfig>) {
+  const data = await request<{ data: import('./types').SiteConfig; success: boolean }>('/settings', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  }, token);
+  return data.data;
+}
+

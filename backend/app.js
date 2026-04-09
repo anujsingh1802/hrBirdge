@@ -123,6 +123,7 @@ app.use('/api/stats', require('./routes/statsRoutes'));
 app.use('/api/companies', require('./routes/companyRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/logos', require('./routes/logoRoutes'));
+app.use('/api/settings', require('./routes/settingsRoutes'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
